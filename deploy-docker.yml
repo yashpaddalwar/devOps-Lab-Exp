@@ -1,0 +1,33 @@
+---
+- hosts: dev
+  become: yes
+  become_method: sudo
+  
+  tasks:
+   - name: Update apt repository
+     apt: update_cache=yes
+   - name: Install python pip
+     apt:
+      name: python3-pip
+      state: present
+   - name: Install Docker
+     apt:
+      name: docker.io
+      state: present
+   - name: Start Docker
+     service:
+      name: docker
+      state: started
+    
+   - name: Install docker-py python module
+     pip:
+      name: docker-py
+      state: present
+   - name: Start the Container
+     docker_container:
+      name: devopsapp
+      image: "vyogita/devopsapp:{{DOCKER_TAG}}"
+      state: started
+      restart: yes
+      ports:
+       - "8080:8080"
